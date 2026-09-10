@@ -9,9 +9,9 @@ namespace CCDomain.Feature.UserFeature
     public class UserService
     {
         private readonly AppDbContext _context;
-        public UserService()
+        public UserService(AppDbContext context)
         {
-            _context = new AppDbContext();
+            _context = context;
         }
 
         public UserListResponseModel GetAllUsers()

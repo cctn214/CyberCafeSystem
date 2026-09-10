@@ -10,9 +10,9 @@ namespace CCWebApi.Controllers
     public class RentController : ControllerBase
     {
         private readonly RentService _rentService;
-        public RentController()
+        public RentController(RentService rentService)
         {
-            _rentService = new RentService();
+            _rentService = rentService;
         }
 
         [HttpPost("create")]

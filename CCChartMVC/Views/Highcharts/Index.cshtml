@@ -1,0 +1,128 @@
+@{
+    ViewData["Title"] = "Highcharts - 3D Pie";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-danger">Chart Library #4</span>
+            <span class="text-secondary small">Highcharts 3D Pie Demo</span>
+        </div>
+        <h2 class="text-white fw-bold mt-1 mb-0">Highcharts - 3D Pie Revenue Share</h2>
+    </div>
+    <div>
+        <a href="https://www.highcharts.com/demo/highcharts/3d-pie" target="_blank" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Official Demo
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="chart-card">
+            <div id="highcharts3dContainer" style="height: 420px; width: 100%;"></div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="chart-card h-100">
+            <h5 class="text-white mb-3"><i class="bi bi-sliders me-2 text-danger"></i>3D Angle Controls</h5>
+            <p class="text-secondary small">
+                Adjust the alpha and beta angles in real-time to change the 3D perspective of the pie chart.
+            </p>
+
+            <div class="mb-3">
+                <label for="alphaSlider" class="form-label text-light d-flex justify-content-between small">
+                    <span>Alpha Angle (Tilt X):</span>
+                    <span id="alphaValue" class="text-info fw-bold">15&deg;</span>
+                </label>
+                <input type="range" class="form-range" id="alphaSlider" min="0" max="45" value="15">
+            </div>
+
+            <div class="mb-4">
+                <label for="betaSlider" class="form-label text-light d-flex justify-content-between small">
+                    <span>Beta Angle (Rotation Y):</span>
+                    <span id="betaValue" class="text-info fw-bold">0&deg;</span>
+                </label>
+                <input type="range" class="form-range" id="betaSlider" min="-45" max="45" value="0">
+            </div>
+
+            <div class="p-3 rounded" style="background: rgba(15, 23, 42, 0.6);">
+                <div class="text-danger small fw-bold mb-1"><i class="bi bi-info-circle me-1"></i> Interactive Feature:</div>
+                <div class="text-secondary small">
+                    Click any slice to detach/slice it out from the 3D pie ring.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script>
+        // Simple C# to JS data pass
+        var pieData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.PieData));
+
+        var chart = Highcharts.chart('highcharts3dContainer', {
+            chart: {
+                type: 'pie',
+                backgroundColor: 'transparent',
+                options3d: {
+                    enabled: true,
+                    alpha: 15,
+                    beta: 0
+                }
+            },
+            title: {
+                text: 'Revenue Contribution by Unit Type (%)',
+                style: { color: '#e2e8f0', fontSize: '18px', fontWeight: 'bold' }
+            },
+            subtitle: {
+                text: '3D Pie Visualization with depth perspective',
+                style: { color: '#94a3b8' }
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b> ({point.y}%)'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 35,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.name}: {point.percentage:.1f}%',
+                        style: {
+                            color: '#e2e8f0',
+                            textOutline: 'none',
+                            fontSize: '13px'
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Share',
+                data: pieData
+            }]
+        });
+
+        // 3D Angle Sliders
+        var alphaSlider = document.getElementById('alphaSlider');
+        var betaSlider = document.getElementById('betaSlider');
+        var alphaVal = document.getElementById('alphaValue');
+        var betaVal = document.getElementById('betaValue');
+
+        function update3dAngles() {
+            chart.options.chart.options3d.alpha = parseFloat(alphaSlider.value);
+            chart.options.chart.options3d.beta = parseFloat(betaSlider.value);
+            alphaVal.innerHTML = alphaSlider.value + '&deg;';
+            betaVal.innerHTML = betaSlider.value + '&deg;';
+            chart.redraw(false);
+        }
+
+        alphaSlider.addEventListener('input', update3dAngles);
+        betaSlider.addEventListener('input', update3dAngles);
+    </script>
+}

@@ -10,9 +10,9 @@ namespace CCWebApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
-        public UserController()
+        public UserController(UserService userService)
         {
-            _userService = new UserService();
+            _userService = userService;
         }
 
         [HttpPost("create")]

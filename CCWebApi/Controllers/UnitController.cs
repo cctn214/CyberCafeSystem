@@ -10,9 +10,9 @@ namespace CCWebApi.Controllers
     public class UnitController : ControllerBase
     {
         private readonly UnitService _unitService;
-        public UnitController()
+        public UnitController(UnitService unitService)
         {
-            _unitService = new UnitService();
+            _unitService = unitService;
         }
 
         [HttpPost("create")]

@@ -1,0 +1,149 @@
+@{
+    ViewData["Title"] = "Chart.js - Revenue & Rentals";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary">Chart Library #1</span>
+            <span class="text-secondary small">ASP.NET Core MVC</span>
+        </div>
+        <h2 class="text-white fw-bold mt-1 mb-0">Chart.js - Revenue &amp; Rental Frequency</h2>
+    </div>
+    <div>
+        <a href="https://www.chartjs.org/" target="_blank" class="btn btn-outline-info btn-sm">
+            <i class="bi bi-box-arrow-up-right me-1"></i> chartjs.org
+        </a>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="chart-card p-3 d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-secondary small">Total Revenue Generated</div>
+                <div class="fs-4 fw-bold text-success">$@ViewBag.TotalRevenue</div>
+            </div>
+            <i class="bi bi-cash-coin fs-1 text-success opacity-75"></i>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="chart-card p-3 d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-secondary small">Total Rental Sessions</div>
+                <div class="fs-4 fw-bold text-primary">@ViewBag.TotalRents sessions</div>
+            </div>
+            <i class="bi bi-clock-history fs-1 text-primary opacity-75"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Main Chart Section -->
+<div class="chart-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h5 class="text-white mb-0">Revenue ($) and Rentals by Unit Type</h5>
+            <small class="text-secondary">Comparing total revenue and rental frequency across computer types</small>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-primary active" id="btnBar">Bar View</button>
+            <button type="button" class="btn btn-outline-primary" id="btnLine">Line View</button>
+        </div>
+    </div>
+    <div style="position: relative; height: 380px; width: 100%;">
+        <canvas id="myChartJsCanvas"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Simple C# to JS data pass
+        var labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Labels));
+        var revenues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Revenues));
+        var rentCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.RentCounts));
+
+        var ctx = document.getElementById('myChartJsCanvas').getContext('2d');
+        
+        var chartConfig = {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Revenue ($)',
+                        data: revenues,
+                        backgroundColor: 'rgba(56, 189, 248, 0.7)',
+                        borderColor: '#38bdf8',
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Rental Count',
+                        data: rentCounts,
+                        backgroundColor: 'rgba(168, 85, 247, 0.7)',
+                        borderColor: '#a855f7',
+                        borderWidth: 2,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e2e8f0', font: { size: 13 } }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        ticks: {
+                            color: '#38bdf8',
+                            callback: function(value) { return '$' + value; }
+                        },
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        ticks: { color: '#a855f7' },
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        };
+
+        var myChart = new Chart(ctx, chartConfig);
+
+        // Toggle Bar/Line type
+        document.getElementById('btnBar').addEventListener('click', function() {
+            chartConfig.type = 'bar';
+            myChart.destroy();
+            myChart = new Chart(ctx, chartConfig);
+            this.classList.add('active');
+            document.getElementById('btnLine').classList.remove('active');
+        });
+
+        document.getElementById('btnLine').addEventListener('click', function() {
+            chartConfig.type = 'line';
+            myChart.destroy();
+            myChart = new Chart(ctx, chartConfig);
+            this.classList.add('active');
+            document.getElementById('btnBar').classList.remove('active');
+        });
+    </script>
+}

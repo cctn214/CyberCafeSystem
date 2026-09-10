@@ -10,9 +10,9 @@ namespace CCDomain.Feature.UnitFeature
     public class UnitService
     {
         private readonly AppDbContext _context;
-        public UnitService()
+        public UnitService(AppDbContext context)
         {
-            _context = new AppDbContext();
+            _context = context;
         }
 
         public UnitListResponseModel GetAllUnits()

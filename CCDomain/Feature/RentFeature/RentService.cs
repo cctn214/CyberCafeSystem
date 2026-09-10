@@ -10,9 +10,9 @@ namespace CCDomain.Feature.RentFeature
     public class RentService
     {
         private readonly AppDbContext _context;
-        public RentService()
+        public RentService(AppDbContext context)
         {
-            _context = new AppDbContext();
+            _context = context;
         }
 
         public RentListResponseModel GetAllRents()

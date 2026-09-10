@@ -1,7 +1,9 @@
 <Solution>
+  <Project Path="CCChartMVC/CCChartMVC.csproj" Id="8bf066ae-6c37-4e46-bac9-3ec3d4ee47cb" />
   <Project Path="CCConsoleApp/CCConsoleApp.csproj" Id="0b1087a5-352e-41a2-93fd-d7303b24b306" />
   <Project Path="CCDatabase/CCDatabase.csproj" />
   <Project Path="CCDomain/CCDomain.csproj" Id="96034f73-e9dc-4034-b367-ff969456e3bf" />
+  <Project Path="CCMVC/CCMVC.csproj" Id="65865ddb-4626-413a-abba-faa8f3b67df6" />
   <Project Path="CCWebApi/CCWebApi.csproj" Id="53d38db1-8b6e-4bf5-bfbc-59c78fe5a66f" />
   <Project Path="CCWindowForm/CCWindowForm.csproj" Id="166cda88-43ed-4ebd-88d0-a352d61c2fcb" />
 </Solution>
