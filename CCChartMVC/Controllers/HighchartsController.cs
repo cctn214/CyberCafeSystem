@@ -19,15 +19,22 @@ namespace CCChartMVC.Controllers
 
             var totalRevenue = rents.Sum(r => r.TotalCost ?? 0);
             var pieData = new List<object>();
+            var columnCategories = new List<string>();
+            var columnRevenues = new List<double>();
 
             foreach (var unit in units)
             {
                 var unitRevenue = rents.Where(r => r.UnitId == unit.UnitId).Sum(r => r.TotalCost ?? 0);
                 double percentage = totalRevenue > 0 ? Math.Round((double)(unitRevenue / totalRevenue) * 100, 1) : 0;
+
                 pieData.Add(new { name = unit.Type, y = percentage });
+                columnCategories.Add(unit.Type);
+                columnRevenues.Add((double)unitRevenue);
             }
 
             ViewBag.PieData = pieData;
+            ViewBag.ColumnCategories = columnCategories;
+            ViewBag.ColumnRevenues = columnRevenues;
 
             return View();
         }

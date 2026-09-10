@@ -8,7 +8,7 @@
             <span class="badge bg-success">Chart Library #3</span>
             <span class="text-secondary small">CanvasJS HTML5 Charting</span>
         </div>
-        <h2 class="text-white fw-bold mt-1 mb-0">CanvasJS - Customer Spending vs Balance</h2>
+        <h2 class="text-white fw-bold mt-1 mb-0">CanvasJS - Customer Analytics Reports</h2>
     </div>
     <div>
         <a href="https://canvasjs.com/" target="_blank" class="btn btn-outline-success btn-sm">
@@ -17,59 +17,68 @@
     </div>
 </div>
 
-<div class="chart-card mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <div>
-            <h5 class="text-white mb-0">Customer Spending vs Account Balance</h5>
-            <small class="text-secondary">Comparing total rental spend against remaining account balance</small>
-        </div>
-        <div class="d-flex gap-2 align-items-center">
-            <label class="text-secondary small me-1">Theme:</label>
-            <select id="themeSelector" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 140px;">
-                <option value="dark1" selected>Dark 1</option>
-                <option value="dark2">Dark 2</option>
-                <option value="light1">Light 1</option>
-                <option value="light2">Light 2</option>
-            </select>
+<div class="row g-4 mb-4">
+    <!-- Chart 1: Spending vs Balance -->
+    <div class="col-lg-7">
+        <div class="chart-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h5 class="text-white mb-0">1. Customer Spending vs Balance</h5>
+                    <small class="text-secondary">Comparing total rental spend against balance</small>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <label class="text-secondary small me-1">Theme:</label>
+                    <select id="themeSelector" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 120px;">
+                        <option value="dark1" selected>Dark 1</option>
+                        <option value="dark2">Dark 2</option>
+                        <option value="light1">Light 1</option>
+                        <option value="light2">Light 2</option>
+                    </select>
+                </div>
+            </div>
+            <div id="canvasJsContainer" style="height: 360px; width: 100%;"></div>
         </div>
     </div>
-    <div id="canvasJsContainer" style="height: 400px; width: 100%;"></div>
+
+    <!-- Chart 2: Rental Sessions per Customer -->
+    <div class="col-lg-5">
+        <div class="chart-card h-100">
+            <div class="mb-3">
+                <h5 class="text-white mb-0">2. Customer Session Activity</h5>
+                <small class="text-secondary">Total number of sessions logged per customer</small>
+            </div>
+            <div id="canvasJsSessionContainer" style="height: 360px; width: 100%;"></div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
     <script>
-        // Simple C# to JS data pass
         var spendingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.SpendingPoints));
         var balanceData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.BalancePoints));
+        var sessionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.SessionPoints));
 
-        function renderCanvasJsChart(themeName) {
-            var chart = new CanvasJS.Chart("canvasJsContainer", {
+        function renderCanvasJsCharts(themeName) {
+            var isDark = themeName.startsWith("dark");
+            var bgColor = isDark ? "#1e293b" : "#ffffff";
+            var textColor = isDark ? "#e2e8f0" : "#333333";
+            var labelColor = isDark ? "#94a3b8" : "#555555";
+
+            // Chart 1: Spending vs Balance
+            var chart1 = new CanvasJS.Chart("canvasJsContainer", {
                 animationEnabled: true,
                 theme: themeName || "dark1",
-                backgroundColor: themeName.startsWith("dark") ? "#1e293b" : "#ffffff",
-                title: {
-                    text: "User Spending vs Account Balance ($)",
-                    fontColor: themeName.startsWith("dark") ? "#e2e8f0" : "#333333",
-                    fontSize: 18
-                },
-                axisX: {
-                    labelFontColor: themeName.startsWith("dark") ? "#94a3b8" : "#333333",
-                    interval: 1
-                },
+                backgroundColor: bgColor,
+                axisX: { labelFontColor: labelColor, interval: 1, labelAngle: -30 },
                 axisY: {
-                    title: "Amount in USD ($)",
-                    labelFontColor: themeName.startsWith("dark") ? "#94a3b8" : "#333333",
-                    titleFontColor: themeName.startsWith("dark") ? "#38bdf8" : "#0d6efd",
+                    title: "Amount ($)",
+                    labelFontColor: labelColor,
+                    titleFontColor: labelColor,
                     prefix: "$"
                 },
-                toolTip: {
-                    shared: true
-                },
-                legend: {
-                    cursor: "pointer",
-                    fontColor: themeName.startsWith("dark") ? "#e2e8f0" : "#333333"
-                },
+                toolTip: { shared: true },
+                legend: { cursor: "pointer", fontColor: textColor },
                 data: [
                     {
                         type: "column",
@@ -81,7 +90,7 @@
                     },
                     {
                         type: "column",
-                        name: "Current Balance ($)",
+                        name: "Balance ($)",
                         showInLegend: true,
                         color: "#4ade80",
                         yValueFormatString: "$#,##0.00",
@@ -89,15 +98,38 @@
                     }
                 ]
             });
-            chart.render();
+            chart1.render();
+
+            // Chart 2: Customer Rental Activity
+            var chart2 = new CanvasJS.Chart("canvasJsSessionContainer", {
+                animationEnabled: true,
+                theme: themeName || "dark1",
+                backgroundColor: bgColor,
+                axisX: { labelFontColor: labelColor, interval: 1, labelAngle: -30 },
+                axisY: {
+                    title: "Sessions Count",
+                    labelFontColor: labelColor,
+                    titleFontColor: labelColor,
+                    interval: 1
+                },
+                data: [{
+                    type: "area",
+                    color: "#f59e0b",
+                    fillOpacity: 0.3,
+                    markerColor: "#f59e0b",
+                    yValueFormatString: "#,##0 sessions",
+                    dataPoints: sessionData
+                }]
+            });
+            chart2.render();
         }
 
         // Initial render
-        renderCanvasJsChart("dark1");
+        renderCanvasJsCharts("dark1");
 
         // Theme selector change listener
         document.getElementById("themeSelector").addEventListener("change", function () {
-            renderCanvasJsChart(this.value);
+            renderCanvasJsCharts(this.value);
         });
     </script>
 }

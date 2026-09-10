@@ -19,16 +19,21 @@ namespace CCChartMVC.Controllers
 
             var spendingPoints = new List<object>();
             var balancePoints = new List<object>();
+            var sessionPoints = new List<object>();
 
             foreach (var user in users)
             {
-                var totalSpent = rents.Where(r => r.UserId == user.UserId).Sum(r => r.TotalCost ?? 0);
+                var userRents = rents.Where(r => r.UserId == user.UserId).ToList();
+                var totalSpent = userRents.Sum(r => r.TotalCost ?? 0);
+
                 spendingPoints.Add(new { label = user.Name, y = (double)totalSpent });
                 balancePoints.Add(new { label = user.Name, y = (double)user.Balance });
+                sessionPoints.Add(new { label = user.Name, y = userRents.Count });
             }
 
             ViewBag.SpendingPoints = spendingPoints;
             ViewBag.BalancePoints = balancePoints;
+            ViewBag.SessionPoints = sessionPoints;
 
             return View();
         }

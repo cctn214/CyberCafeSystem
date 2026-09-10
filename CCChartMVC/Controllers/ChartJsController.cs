@@ -20,6 +20,7 @@ namespace CCChartMVC.Controllers
             var labels = new List<string>();
             var revenues = new List<decimal>();
             var rentCounts = new List<int>();
+            var durations = new List<int>();
 
             foreach (var unit in units)
             {
@@ -27,13 +28,16 @@ namespace CCChartMVC.Controllers
                 labels.Add(unit.Type);
                 revenues.Add(unitRents.Sum(r => r.TotalCost ?? 0));
                 rentCounts.Add(unitRents.Count);
+                durations.Add(unitRents.Sum(r => r.Duration ?? 0));
             }
 
             ViewBag.Labels = labels;
             ViewBag.Revenues = revenues;
             ViewBag.RentCounts = rentCounts;
+            ViewBag.Durations = durations;
             ViewBag.TotalRevenue = revenues.Sum();
             ViewBag.TotalRents = rentCounts.Sum();
+            ViewBag.TotalMinutes = durations.Sum();
 
             return View();
         }

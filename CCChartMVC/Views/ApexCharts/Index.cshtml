@@ -1,58 +1,48 @@
 @{
-    ViewData["Title"] = "ApexCharts - Simple Pie";
+    ViewData["Title"] = "ApexCharts - Rental Analytics";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
         <div class="d-flex align-items-center gap-2">
             <span class="badge bg-warning text-dark">Chart Library #2</span>
-            <span class="text-secondary small">ApexCharts Simple Pie Demo</span>
+            <span class="text-secondary small">ApexCharts Dynamic Visuals</span>
         </div>
-        <h2 class="text-white fw-bold mt-1 mb-0">ApexCharts - Rental Share Distribution</h2>
+        <h2 class="text-white fw-bold mt-1 mb-0">ApexCharts - Rental &amp; Category Reports</h2>
     </div>
     <div>
-        <a href="https://apexcharts.com/javascript-chart-demos/pie-charts/simple-pie/" target="_blank" class="btn btn-outline-warning btn-sm">
-            <i class="bi bi-box-arrow-up-right me-1"></i> Official Demo
+        <a href="https://apexcharts.com/javascript-chart-demos/" target="_blank" class="btn btn-outline-warning btn-sm">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Official Docs
         </a>
     </div>
 </div>
 
 <div class="row g-4">
-    <div class="col-lg-7">
-        <div class="chart-card d-flex flex-column align-items-center justify-content-center" style="min-height: 450px;">
-            <div id="apexSimplePieChart"></div>
+    <!-- Chart 1: Unit Rental Share (Pie/Donut) -->
+    <div class="col-lg-6">
+        <div class="chart-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="text-white mb-0">1. Rental Share by Unit</h5>
+                    <small class="text-secondary">Session proportion per computer / console</small>
+                </div>
+                <span class="badge bg-warning text-dark">@ViewBag.TotalSessions Total Sessions</span>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="min-height: 360px;">
+                <div id="apexSimplePieChart" style="width: 100%;"></div>
+            </div>
         </div>
     </div>
-    <div class="col-lg-5">
+
+    <!-- Chart 2: Revenue by Device Category (Bar/Column) -->
+    <div class="col-lg-6">
         <div class="chart-card h-100">
-            <h5 class="text-white mb-3">Rental Popularity Breakdown</h5>
-            <p class="text-secondary small">
-                Interactive simple pie chart showing the proportion of rental activity across each computer category in the cyber cafe.
-            </p>
-
-            <div class="p-3 rounded mb-3" style="background: rgba(15, 23, 42, 0.6);">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-secondary">Total Sessions Logged:</span>
-                    <span class="badge bg-warning text-dark fs-6">@ViewBag.TotalSessions</span>
-                </div>
+            <div class="mb-3">
+                <h5 class="text-white mb-0">2. Revenue by Device Category ($)</h5>
+                <small class="text-secondary">Comparing total revenue across PC, PS4, and PS5</small>
             </div>
-
-            <div class="list-group list-group-flush bg-transparent">
-                @{
-                    var labels = (List<string>)ViewBag.Labels;
-                    var series = (List<int>)ViewBag.Series;
-                    for (int i = 0; i < labels.Count; i++)
-                    {
-                        var pct = ViewBag.TotalSessions > 0 ? (series[i] * 100.0 / (int)ViewBag.TotalSessions) : 0;
-                        <div class="list-group-item bg-transparent text-light d-flex justify-content-between align-items-center px-0 border-secondary">
-                            <div>
-                                <i class="bi bi-circle-fill text-warning me-2 small"></i>
-                                <span>@labels[i]</span>
-                            </div>
-                            <span class="fw-bold">@series[i] (@pct.ToString("0.0")%)</span>
-                        </div>
-                    }
-                }
+            <div style="min-height: 360px;">
+                <div id="apexCategoryBarChart" style="width: 100%;"></div>
             </div>
         </div>
     </div>
@@ -61,46 +51,74 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        // Simple C# to JS data pass
         var seriesData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Series));
         var labelsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Labels));
+        var categoryLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.CategoryLabels));
+        var categoryRevenues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.CategoryRevenues));
 
-        var options = {
+        // Chart 1: Unit Sessions Donut/Pie Chart
+        var pieOptions = {
             series: seriesData,
             chart: {
-                width: 420,
-                type: 'pie',
+                type: 'donut',
+                height: 350,
                 foreColor: '#94a3b8'
             },
             labels: labelsData,
-            colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'],
+            colors: ['#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#fb7185', '#fbbf24', '#34d399'],
             legend: {
                 position: 'bottom',
-                labels: {
-                    colors: '#e2e8f0'
-                }
+                labels: { colors: '#e2e8f0' }
             },
             dataLabels: {
                 enabled: true,
-                style: {
-                    fontSize: '14px',
-                    fontWeight: 'bold'
+                style: { fontSize: '13px', fontWeight: 'bold' }
+            }
+        };
+        var pieChart = new ApexCharts(document.querySelector("#apexSimplePieChart"), pieOptions);
+        pieChart.render();
+
+        // Chart 2: Category Revenue Bar/Column Chart
+        var barOptions = {
+            series: [{
+                name: 'Total Revenue ($)',
+                data: categoryRevenues
+            }],
+            chart: {
+                type: 'bar',
+                height: 350,
+                foreColor: '#94a3b8',
+                toolbar: { show: false }
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 8,
+                    columnWidth: '45%',
+                    distributed: true
                 }
             },
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 300
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
+            colors: ['#38bdf8', '#fbbf24', '#a855f7'],
+            xaxis: {
+                categories: categoryLabels,
+                labels: { style: { colors: '#e2e8f0', fontSize: '13px' } }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function(val) { return '$' + val; },
+                    style: { colors: '#94a3b8' }
                 }
-            }]
+            },
+            legend: { show: false },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val) { return '$' + val; },
+                style: { colors: ['#ffffff'], fontWeight: 'bold' }
+            },
+            grid: {
+                borderColor: 'rgba(255, 255, 255, 0.05)'
+            }
         };
-
-        var chart = new ApexCharts(document.querySelector("#apexSimplePieChart"), options);
-        chart.render();
+        var barChart = new ApexCharts(document.querySelector("#apexCategoryBarChart"), barOptions);
+        barChart.render();
     </script>
 }

@@ -8,7 +8,7 @@
             <span class="badge bg-primary">Chart Library #1</span>
             <span class="text-secondary small">ASP.NET Core MVC</span>
         </div>
-        <h2 class="text-white fw-bold mt-1 mb-0">Chart.js - Revenue &amp; Rental Frequency</h2>
+        <h2 class="text-white fw-bold mt-1 mb-0">Chart.js - Revenue &amp; Usage Reports</h2>
     </div>
     <div>
         <a href="https://www.chartjs.org/" target="_blank" class="btn btn-outline-info btn-sm">
@@ -19,7 +19,7 @@
 
 <!-- KPI Cards -->
 <div class="row g-3 mb-4">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="chart-card p-3 d-flex justify-content-between align-items-center">
             <div>
                 <div class="text-secondary small">Total Revenue Generated</div>
@@ -28,7 +28,7 @@
             <i class="bi bi-cash-coin fs-1 text-success opacity-75"></i>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="chart-card p-3 d-flex justify-content-between align-items-center">
             <div>
                 <div class="text-secondary small">Total Rental Sessions</div>
@@ -37,36 +37,63 @@
             <i class="bi bi-clock-history fs-1 text-primary opacity-75"></i>
         </div>
     </div>
-</div>
-
-<!-- Main Chart Section -->
-<div class="chart-card mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <div>
-            <h5 class="text-white mb-0">Revenue ($) and Rentals by Unit Type</h5>
-            <small class="text-secondary">Comparing total revenue and rental frequency across computer types</small>
-        </div>
-        <div class="btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-outline-primary active" id="btnBar">Bar View</button>
-            <button type="button" class="btn btn-outline-primary" id="btnLine">Line View</button>
+    <div class="col-md-4">
+        <div class="chart-card p-3 d-flex justify-content-between align-items-center">
+            <div>
+                <div class="text-secondary small">Total Time Used</div>
+                <div class="fs-4 fw-bold text-warning">@ViewBag.TotalMinutes mins</div>
+            </div>
+            <i class="bi bi-hourglass-split fs-1 text-warning opacity-75"></i>
         </div>
     </div>
-    <div style="position: relative; height: 380px; width: 100%;">
-        <canvas id="myChartJsCanvas"></canvas>
+</div>
+
+<!-- 2 Charts Grid -->
+<div class="row g-4">
+    <!-- Chart 1: Revenue and Rental Frequency -->
+    <div class="col-lg-7">
+        <div class="chart-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h5 class="text-white mb-0">1. Revenue ($) and Sessions by Unit</h5>
+                    <small class="text-secondary">Comparing total revenue against rental count</small>
+                </div>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="btnBar">Bar</button>
+                    <button type="button" class="btn btn-outline-primary" id="btnLine">Line</button>
+                </div>
+            </div>
+            <div style="position: relative; height: 350px; width: 100%;">
+                <canvas id="myChartJsCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 2: Usage Duration per Unit -->
+    <div class="col-lg-5">
+        <div class="chart-card h-100">
+            <div class="mb-3">
+                <h5 class="text-white mb-0">2. Usage Duration by Unit (Minutes)</h5>
+                <small class="text-secondary">Distribution of occupied time across all units</small>
+            </div>
+            <div style="position: relative; height: 350px; width: 100%;">
+                <canvas id="durationChartCanvas"></canvas>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Simple C# to JS data pass
         var labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Labels));
         var revenues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Revenues));
         var rentCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.RentCounts));
+        var durations = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Durations));
 
-        var ctx = document.getElementById('myChartJsCanvas').getContext('2d');
-        
-        var chartConfig = {
+        // Chart 1: Revenue vs Sessions
+        var ctx1 = document.getElementById('myChartJsCanvas').getContext('2d');
+        var chartConfig1 = {
             type: 'bar',
             data: {
                 labels: labels,
@@ -93,32 +120,19 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        labels: { color: '#e2e8f0', font: { size: 13 } }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
-                    }
+                    legend: { labels: { color: '#e2e8f0' } },
+                    tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
-                    x: {
-                        ticks: { color: '#94a3b8' },
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' }
-                    },
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
                     y: {
                         type: 'linear',
-                        display: true,
                         position: 'left',
-                        ticks: {
-                            color: '#38bdf8',
-                            callback: function(value) { return '$' + value; }
-                        },
+                        ticks: { color: '#38bdf8', callback: function(v) { return '$' + v; } },
                         grid: { color: 'rgba(255, 255, 255, 0.05)' }
                     },
                     y1: {
                         type: 'linear',
-                        display: true,
                         position: 'right',
                         ticks: { color: '#a855f7' },
                         grid: { drawOnChartArea: false }
@@ -126,24 +140,54 @@
                 }
             }
         };
+        var myChart1 = new Chart(ctx1, chartConfig1);
 
-        var myChart = new Chart(ctx, chartConfig);
-
-        // Toggle Bar/Line type
         document.getElementById('btnBar').addEventListener('click', function() {
-            chartConfig.type = 'bar';
-            myChart.destroy();
-            myChart = new Chart(ctx, chartConfig);
+            chartConfig1.type = 'bar';
+            myChart1.destroy();
+            myChart1 = new Chart(ctx1, chartConfig1);
             this.classList.add('active');
             document.getElementById('btnLine').classList.remove('active');
         });
 
         document.getElementById('btnLine').addEventListener('click', function() {
-            chartConfig.type = 'line';
-            myChart.destroy();
-            myChart = new Chart(ctx, chartConfig);
+            chartConfig1.type = 'line';
+            myChart1.destroy();
+            myChart1 = new Chart(ctx1, chartConfig1);
             this.classList.add('active');
             document.getElementById('btnBar').classList.remove('active');
+        });
+
+        // Chart 2: Usage Time by Unit (Doughnut Chart)
+        var ctx2 = document.getElementById('durationChartCanvas').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Minutes Used',
+                    data: durations,
+                    backgroundColor: [
+                        '#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#fb7185', '#fbbf24', '#34d399'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#1e293b'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#e2e8f0', boxWidth: 12 } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + ' mins';
+                            }
+                        }
+                    }
+                }
+            }
         });
     </script>
 }
