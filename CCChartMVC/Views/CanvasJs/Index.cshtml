@@ -55,9 +55,9 @@
 @section Scripts {
     <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
     <script>
-        var spendingData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.SpendingPoints));
-        var balanceData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.BalancePoints));
-        var sessionData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.SessionPoints));
+        var spendingData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.SpendingPoints));
+        var balanceData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.BalancePoints));
+        var sessionData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.SessionPoints));
 
         function renderCanvasJsCharts(themeName) {
             var isDark = themeName.startsWith("dark");

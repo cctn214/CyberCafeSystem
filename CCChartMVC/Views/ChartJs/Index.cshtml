@@ -86,10 +86,10 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Labels));
-        var revenues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Revenues));
-        var rentCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.RentCounts));
-        var durations = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Durations));
+        var labels = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Labels));
+        var revenues = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Revenues));
+        var rentCounts = @Html.Raw(JsonConvert.SerializeObject(ViewBag.RentCounts));
+        var durations = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Durations));
 
         // Chart 1: Revenue vs Sessions
         var ctx1 = document.getElementById('myChartJsCanvas').getContext('2d');

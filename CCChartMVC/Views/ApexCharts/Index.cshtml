@@ -51,10 +51,10 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        var seriesData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Series));
-        var labelsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.Labels));
-        var categoryLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.CategoryLabels));
-        var categoryRevenues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.CategoryRevenues));
+        var seriesData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Series));
+        var labelsData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Labels));
+        var categoryLabels = @Html.Raw(JsonConvert.SerializeObject(ViewBag.CategoryLabels));
+        var categoryRevenues = @Html.Raw(JsonConvert.SerializeObject(ViewBag.CategoryRevenues));
 
         // Chart 1: Unit Sessions Donut/Pie Chart
         var pieOptions = {
