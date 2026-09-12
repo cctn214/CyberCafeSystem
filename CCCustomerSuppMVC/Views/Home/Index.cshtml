@@ -1,0 +1,58 @@
+@{
+    ViewData["Title"] = "Real-Time Support Chat";
+}
+
+<link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" />
+
+<div class="chat-wrapper">
+    <div class="chat-card">
+        <!-- Header -->
+        <div class="chat-header">
+            <h2 class="chat-header-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Customer Support Chat
+            </h2>
+            <div id="statusBadge" class="status-badge connecting">
+                <span class="status-dot"></span>
+                <span>Connecting...</span>
+            </div>
+        </div>
+
+        <!-- User Name Input Bar -->
+        <div class="user-config-bar">
+            <label for="userInput">Your Name:</label>
+            <input type="text" id="userInput" class="form-control form-control-sm" placeholder="Your name..." autocomplete="off" />
+        </div>
+
+        <!-- Chat Messages Container -->
+        <div id="messagesList" class="chat-messages">
+            <div id="emptyState" class="chat-empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <p class="mb-0">No messages yet. Send a message to start chatting!</p>
+            </div>
+        </div>
+
+        <!-- Message Input Box & Send Button -->
+        <div class="chat-input-area">
+            <form id="chatForm" class="chat-input-form" onsubmit="return false;">
+                <input type="text" id="messageInput" class="chat-input-control" placeholder="Type your message here..." autocomplete="off" />
+                <button type="button" id="sendButton" class="btn-send" disabled>
+                    <span>Send</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+}
